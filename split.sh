@@ -11,7 +11,6 @@ output_dir=${3:-$(dirname "$input")}
 
 basename=$(basename "$input")
 filename="${basename%.*}"
-extension="${basename##*.}"
 
 if [ "$output_dir" = "." ]; then
   output_path="./$filename"
@@ -26,4 +25,4 @@ if ! command -v ffmpeg &> /dev/null; then
   exit 1
 fi
 
-ffmpeg -i "$input" -c copy -map 0 -segment_time "$time" -f segment -reset_timestamps 1 "${output_path}/${filename}_%03d.${extension}"
+ffmpeg -i $input -c:v libx264 -c:a aac -strict experimental -b:a 192k -force_key_frames "expr:gte(t,n_forced*${time})" -f segment -segment_time $time -reset_timestamps 1 -map 0 "${output_path}/${filename}_%03d.${basename##*.}"
