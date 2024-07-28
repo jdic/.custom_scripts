@@ -15,7 +15,7 @@ Delete all folders found with a given name in the current directory or one provi
 Split a video into several parts in a given time using ffmpeg in the current directory or one provided.
 
 ```shell
-./split.sh <time> <path> [new_path]
+./split.sh <time> <path> [path]
 ```
 
 ### Built with

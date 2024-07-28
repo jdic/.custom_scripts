@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$#" -lt 2 ] || [ "$#" -gt 3 ]; then
-  echo "Usage: $0 <time> <path> [new_path]"
+  echo "Usage: $0 <time> <path> [path]"
   exit 1
 fi
 
