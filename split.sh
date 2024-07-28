@@ -16,6 +16,8 @@ fi
 
 basename=$(basename "$INPUT_PATH")
 filename="${basename%.*}"
+extension="${basename##*.}"
+
 output_path="$OUTPUT_DIR/$filename"
 
 mkdir -p "$output_path"
@@ -25,4 +27,22 @@ if ! command -v ffmpeg &> /dev/null; then
   exit 1
 fi
 
-ffmpeg -i "$INPUT_PATH" -c:v libx264 -c:a aac -strict experimental -b:a 192k -force_key_frames "expr:gte(t,n_forced*${SPLIT_TIME})" -f segment -segment_time "$SPLIT_TIME" -reset_timestamps 1 -map 0 "${output_path}/${filename}_%03d.${basename##*.}"
+case "$extension" in
+  webm)
+    video_codec="libvpx"
+    audio_codec="libvorbis"
+    output_extension="webm"
+    ;;
+  mp4)
+    video_codec="libx264"
+    audio_codec="aac"
+    output_extension="mp4"
+    ;;
+  *)
+    video_codec="copy"
+    audio_codec="copy"
+    output_extension="$extension"
+    ;;
+esac
+
+ffmpeg -i "$INPUT_PATH" -c:v $video_codec -c:a $audio_codec -b:a 192k -force_key_frames "expr:gte(t,n_forced*${SPLIT_TIME})" -f segment -segment_time "$SPLIT_TIME" -reset_timestamps 1 -map 0 "${output_path}/${filename}_%03d.$output_extension"
